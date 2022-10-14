@@ -1,6 +1,6 @@
 # pySparkDemo_OpenAlex
 
-实验室服务器已完成 OpenAlex 数据集下载及转换，过程依据[官方文档](https://docs.openalex.org/download-snapshot)。本仓库包含基于 PySpark 的 OpenAlex 读取初始化过程，可方便基于该数据集进行实验。同时可以参考仓库内的 demo notebook 进行基本学习。
+实验室服务器已完成 OpenAlex 数据集下载及转换，过程依据[官方文档](https://docs.openalex.org/download-snapshot)。本仓库包含基于 PySpark 的 OpenAlex 读取初始化过程，可方便基于该数据集进行实验。同时可以参考仓库内的 [教程 notebook](https://github.com/whuscity/pySparkDemo_OpenAlex/blob/main/OpenAlexSparkTutorial.ipynb) 进行基本学习。
 
 ## 使用方法
 

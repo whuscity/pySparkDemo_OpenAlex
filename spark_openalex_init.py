@@ -1,28 +1,12 @@
 import findspark
-
-findspark.init('/opt/spark-3.1.2')
-
 from pyspark.sql.types import *
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F # apache 查询使用文档
 from pyspark.sql.functions import *
 from pyspark.sql.window import Window
-
-spark = SparkSession \
-    .builder \
-    .master("spark://c8mao:7077")\
-    .config("spark.executor.cores","4")\
-    .config("spark.driver.memory", "20g") \
-    .config("spark.executor.memory", "16g") \
-    .config("spark.dynamicAllocation.enabled", "true") \
-    .config("spark.dynamicAllocation.shuffleTracking.enabled", "true") \
-    .config("spark.shuffle.service.enabled", "true") \
-    .config("spark.hadoop.fs.permissions.umask-mode", "000") \
-    .appName("OpenAlex_Username_Demo") \
-    .getOrCreate()
+import getopt
 
 class OpenAlex():
-
   # return stream path
   def getFullpath(self, streamName):
     path = r'/home/Public/OpenAlex/csv-files/' + self.streams[streamName][0]
@@ -85,39 +69,72 @@ class OpenAlex():
     'VenuesIds' : ('venues_ids.tsv', ['venue_id:string', 'openalex:string?', 'issn_l:string?', 'issn:string?', 'mag:string?'])
   }
 
-OA = OpenAlex()
-to_array = udf(lambda x: x.replace("\"","").replace("[","").replace("]","").split(','), ArrayType(StringType()))
+if __name__ == '__main__':
+    findspark.init('/opt/spark-3.1.2')
 
-Authors = OA.getDataframe('Authors')
-AuthorsIds = OA.getDataframe('AuthorsIds')
-AuthorsCountsByYear = OA.getDataframe('AuthorsCountsByYear')
-Concepts = OA.getDataframe('Concepts')
-ConceptsAncestors = OA.getDataframe('ConceptsAncestors')
-ConceptsCountsByYear = OA.getDataframe('ConceptsCountsByYear')
-ConceptsIds = OA.getDataframe('ConceptsIds')
-ConceptsRelatedConcepts = OA.getDataframe('ConceptsRelatedConcepts')
-Institutions = OA.getDataframe('Institutions')
-InstitutionsAssociatedInstitutions = OA.getDataframe('InstitutionsAssociatedInstitutions')
-InstitutionsCountsByYear = OA.getDataframe('InstitutionsCountsByYear')
-InstitutionsGeo = OA.getDataframe('InstitutionsGeo')
-InstitutionsIds = OA.getDataframe('InstitutionsIds')
-Works = OA.getDataframe('Works')
-WorksAuthorships = OA.getDataframe('WorksAuthorships')
-WorksAlternateHostVenues = OA.getDataframe('WorksAlternateHostVenues')
-WorksBiblio = OA.getDataframe('WorksBiblio')
-WorksConcepts = OA.getDataframe('WorksConcepts')
-WorksHostVenues = OA.getDataframe('WorksHostVenues')
-WorksIds = OA.getDataframe('WorksIds')
-WorksMesh = OA.getDataframe('WorksMesh')
-WorksOpenAccess = OA.getDataframe('WorksOpenAccess')
-WorksRelatedWorks = OA.getDataframe('WorksRelatedWorks')
-WorksReferencedWorks = OA.getDataframe('WorksReferencedWorks')
-Venues = OA.getDataframe('Venues')
-VenuesCountsByYear = OA.getDataframe('VenuesCountsByYear')
-VenuesIds = OA.getDataframe('VenuesIds')
+    opts, _ = getopt.getopt(sys.argv[1:], 'p:', ["help", "appname=", "port="])
+    sparks = SparkSession \
+        .builder \
+        .master("spark://c8mao:7077")\
+        .config("spark.executor.cores","4")\
+        .config("spark.driver.memory", "20g") \
+        .config("spark.executor.memory", "16g") \
+        .config("spark.dynamicAllocation.enabled", "true") \
+        .config("spark.dynamicAllocation.shuffleTracking.enabled", "true") \
+        .config("spark.shuffle.service.enabled", "true") \
+        .config("spark.hadoop.fs.permissions.umask-mode", "000") \
+        .appName("OpenAlex_Username_Demo")
+    appnameFlag = False
+    for opt, value in opts:
+        if opt in ("-h", "--help"):
+            print("Usage:\n\t\t-h, --help\thelp for spark_openalex_init.py\n\t\t-p=<port>, --port=<port>\tassign app spark ui to <port>.\n\t\t--appname=<name>\tset app name to <name>.")
+            exit(0)
+        elif opt == "--appname":
+            sparks.appName(value)
+            appnameFlag = True
+        elif opt in ("-p", "--port"):
+            sparks.config("spark.ui.port",value)
+
+    if appnameFlag == False:
+        spark.appName("OpenAlex_Default")
+    
+    spark = sparks.getOrCreate()
+    display(spark)
+
+    OA = OpenAlex()
+
+    to_array = udf(lambda x: x.replace("\"","").replace("[","").replace("]","").split(','), ArrayType(StringType()))
+
+    Authors = OA.getDataframe('Authors')
+    AuthorsIds = OA.getDataframe('AuthorsIds')
+    AuthorsCountsByYear = OA.getDataframe('AuthorsCountsByYear')
+    Concepts = OA.getDataframe('Concepts')
+    ConceptsAncestors = OA.getDataframe('ConceptsAncestors')
+    ConceptsCountsByYear = OA.getDataframe('ConceptsCountsByYear')
+    ConceptsIds = OA.getDataframe('ConceptsIds')
+    ConceptsRelatedConcepts = OA.getDataframe('ConceptsRelatedConcepts')
+    Institutions = OA.getDataframe('Institutions')
+    InstitutionsAssociatedInstitutions = OA.getDataframe('InstitutionsAssociatedInstitutions')
+    InstitutionsCountsByYear = OA.getDataframe('InstitutionsCountsByYear')
+    InstitutionsGeo = OA.getDataframe('InstitutionsGeo')
+    InstitutionsIds = OA.getDataframe('InstitutionsIds')
+    Works = OA.getDataframe('Works')
+    WorksAuthorships = OA.getDataframe('WorksAuthorships')
+    WorksAlternateHostVenues = OA.getDataframe('WorksAlternateHostVenues')
+    WorksBiblio = OA.getDataframe('WorksBiblio')
+    WorksConcepts = OA.getDataframe('WorksConcepts')
+    WorksHostVenues = OA.getDataframe('WorksHostVenues')
+    WorksIds = OA.getDataframe('WorksIds')
+    WorksMesh = OA.getDataframe('WorksMesh')
+    WorksOpenAccess = OA.getDataframe('WorksOpenAccess')
+    WorksRelatedWorks = OA.getDataframe('WorksRelatedWorks')
+    WorksReferencedWorks = OA.getDataframe('WorksReferencedWorks')
+    Venues = OA.getDataframe('Venues')
+    VenuesCountsByYear = OA.getDataframe('VenuesCountsByYear')
+    VenuesIds = OA.getDataframe('VenuesIds')
 
 
-Authors = Authors.withColumn("display_name_alternatives_array", to_array(Authors.display_name_alternatives))
-Institutions = Institutions.withColumn("display_name_alternatives_array", to_array(Institutions.display_name_alternatives))
-Venues = Venues.withColumn("display_name_array", to_array(Venues.display_name))
-VenuesIds = VenuesIds.withColumn("issn_array", to_array(VenuesIds.issn))
+    Authors = Authors.withColumn("display_name_alternatives_array", to_array(Authors.display_name_alternatives))
+    Institutions = Institutions.withColumn("display_name_alternatives_array", to_array(Institutions.display_name_alternatives))
+    Venues = Venues.withColumn("display_name_array", to_array(Venues.display_name))
+    VenuesIds = VenuesIds.withColumn("issn_array", to_array(VenuesIds.issn))

@@ -53,7 +53,7 @@ class OpenAlex():
     'InstitutionsCountsByYear' : ('institutions_counts_by_year.tsv', ['institution_id:ulong', 'year:int', 'works_count:int?', 'cited_by_count:int?']),
     'InstitutionsGeo' : ('institutions_geo.tsv', ['institution_id:ulong', 'city:string?', 'geonames_city_id:string?', 'region:string?', 'country_code:string?', 'country:string?', 'latitude:float?', 'longitude:float?']),
     'InstitutionsIds' : ('institutions_ids.tsv', ['institution_id:ulong', 'openalex:string?', 'ror:string?', 'grid:string?', 'wikipedia:string?', 'wikidata:string?', 'mag:int?']),
-    'Works' : ('works.tsv', ['id:ulong', 'doi:string?', 'title:string?', 'display_name:string?', 'publication_year:int?', 'publication_date:string?', 'type:string?', 'cited_by_count:int?', 'is_retracted:bool?', 'is_paratext:bool?', 'host_venue:string?']),
+    'Works' : ('works.tsv', ['id:ulong', 'doi:string?', 'title:string?', 'display_name:string?', 'publication_year:int?', 'publication_date:string?', 'type:string?', 'cited_by_count:int?', 'is_retracted:bool?', 'is_paratext:bool?', 'cited_by_api_url:string?', 'abstract_inverted_index:string?']),
     'WorksAuthorships' : ('works_authorships.tsv', ['work_id:ulong', 'author_position:string?', 'author_id:string?', 'institution_id:string?']),
     'WorksAlternateHostVenues' : ('works_alternate_host_venues.tsv', ['work_id:ulong', 'alternate_host_venue:ulong']),
     'WorksBiblio' : ('works_biblio.tsv', ['work_id:ulong', 'volume:string?', 'issue:string?', 'first_page:string?', 'last_page:string?']),
